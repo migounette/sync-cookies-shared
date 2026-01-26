@@ -10,14 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const selectAllCheckbox = document.getElementById('selectAll');
   const pushSelectedBtn = document.getElementById('pushSelectedBtn');
   const selectedCountSpan = document.getElementById('selectedCount');
-  const encryptionPassword = document.getElementById('encryptionPassword');
-  const togglePasswordBtn = document.getElementById('togglePassword');
   const openActivityLogBtn = document.getElementById('openActivityLog');
 
   // Store all cookies for filtering
   let allCookies = [];
   let selectedCookies = new Set();
   let backendSettings = null;
+  let encryptionPassword = '';
 
   // Initialize status
   setStatus('ready', 'Ready');
@@ -41,22 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Save filter value to storage
     chrome.storage.local.set({ domainFilter: domainFilter.value });
   });
-
-  // Toggle password visibility
-  if (togglePasswordBtn) {
-    togglePasswordBtn.addEventListener('click', function() {
-      const type = encryptionPassword.type === 'password' ? 'text' : 'password';
-      encryptionPassword.type = type;
-      
-      // Update icon (add strike-through for "hidden" state)
-      const eyeIcon = document.getElementById('eyeIcon');
-      if (type === 'text') {
-        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
-      } else {
-        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-      }
-    });
-  }
 
   // Open activity log window
   if (openActivityLogBtn) {
@@ -100,17 +83,14 @@ document.addEventListener('DOMContentLoaded', function() {
       addLog('Using default backend: Local Download');
     }
     
-    const password = encryptionPassword.value.trim();
+    const password = encryptionPassword.trim();
     
     // Validate password is provided
     if (!password) {
-      setStatus('warning', 'Password is required for encryption!');
-      addLog('Push failed: Password is required');
-      showErrorPopup('An error has occurred, check logs');
-      encryptionPassword.focus();
-      encryptionPassword.style.borderColor = '#f44336';
+      setStatus('warning', 'Password is required for encryption! Please set it in Settings.');
+      addLog('Push failed: Password not configured');
+      showErrorPopup('Password not configured. Please set encryption password in Settings.');
       setTimeout(() => {
-        encryptionPassword.style.borderColor = '';
         setStatus('ready', 'Ready');
       }, 10000);
       return;
@@ -208,12 +188,12 @@ document.addEventListener('DOMContentLoaded', function() {
       
       addLog(`Backend provider: ${backendSettings.provider}`);
       
-      // Get password from input
-      const password = encryptionPassword.value.trim();
+      // Get password from variable
+      const password = encryptionPassword.trim();
       if (!password) {
-        setStatus('warning', 'Password required');
-        addLog('Import failed: No password provided');
-        showErrorPopup('Please enter the encryption password');
+        setStatus('warning', 'Password not configured');
+        addLog('Import failed: Password not configured');
+        showErrorPopup('Please set encryption password in Settings');
         setTimeout(() => setStatus('ready', 'Ready'), 3000);
         return;
       }
@@ -615,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Load saved state from storage
   function loadSavedState() {
-    chrome.storage.local.get(['domainFilter', 'selectedCookies'], function(result) {
+    chrome.storage.local.get(['domainFilter', 'selectedCookies', 'encryptionPassword'], function(result) {
       // Restore filter
       if (result.domainFilter) {
         domainFilter.value = result.domainFilter;
@@ -624,6 +604,14 @@ document.addEventListener('DOMContentLoaded', function() {
       // Restore selected cookies
       if (result.selectedCookies && Array.isArray(result.selectedCookies)) {
         selectedCookies = new Set(result.selectedCookies);
+      }
+      
+      // Load encryption password
+      if (result.encryptionPassword) {
+        encryptionPassword = result.encryptionPassword;
+        addLog('Encryption password loaded from settings');
+      } else {
+        addLog('Warning: No encryption password configured. Please set it in Settings.');
       }
     });
   }
