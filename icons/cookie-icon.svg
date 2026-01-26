@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Cookie base -->
+  <circle cx="64" cy="64" r="58" fill="#D4A574" stroke="#B8935D" stroke-width="3"/>
+  
+  <!-- Bite mark -->
+  <path d="M 100 30 Q 115 35 120 50 Q 115 45 105 42 Q 100 35 100 30 Z" fill="#F5F5F5" opacity="0.3"/>
+  <circle cx="110" cy="40" r="18" fill="#F5F5F5"/>
+  
+  <!-- Chocolate chips - dark brown -->
+  <ellipse cx="45" cy="50" rx="8" ry="9" fill="#6B4423" transform="rotate(-15 45 50)"/>
+  <ellipse cx="70" cy="45" rx="7" ry="8" fill="#6B4423" transform="rotate(20 70 45)"/>
+  <ellipse cx="55" cy="75" rx="9" ry="8" fill="#6B4423" transform="rotate(-10 55 75)"/>
+  <ellipse cx="82" cy="70" rx="8" ry="9" fill="#6B4423" transform="rotate(25 82 70)"/>
+  <ellipse cx="40" cy="82" rx="7" ry="8" fill="#6B4423" transform="rotate(15 40 82)"/>
+  <ellipse cx="68" cy="90" rx="8" ry="7" fill="#6B4423" transform="rotate(-20 68 90)"/>
+  <ellipse cx="35" cy="65" rx="6" ry="7" fill="#6B4423" transform="rotate(10 35 65)"/>
+  <ellipse cx="88" cy="55" rx="7" ry="8" fill="#6B4423" transform="rotate(-25 88 55)"/>
+  
+  <!-- Medium brown chips -->
+  <ellipse cx="50" cy="62" rx="6" ry="7" fill="#8B5A2B" transform="rotate(30 50 62)"/>
+  <ellipse cx="78" cy="80" rx="7" ry="6" fill="#8B5A2B" transform="rotate(-15 78 80)"/>
+  <ellipse cx="60" cy="55" rx="5" ry="6" fill="#8B5A2B" transform="rotate(20 60 55)"/>
+  
+  <!-- Highlight for 3D effect -->
+  <ellipse cx="50" cy="40" rx="20" ry="15" fill="#F4E4C1" opacity="0.4" transform="rotate(-30 50 40)"/>
+  
+  <!-- Edge texture (crumbs) -->
+  <circle cx="22" cy="45" r="3" fill="#C9985A"/>
+  <circle cx="28" cy="30" r="2.5" fill="#C9985A"/>
+  <circle cx="18" cy="62" r="2" fill="#C9985A"/>
+  <circle cx="25" cy="95" r="3" fill="#C9985A"/>
+  <circle cx="45" cy="108" r="2.5" fill="#C9985A"/>
+  <circle cx="80" cy="110" r="2" fill="#C9985A"/>
+  <circle cx="102" cy="95" r="3" fill="#C9985A"/>
+  <circle cx="108" cy="75" r="2.5" fill="#C9985A"/>
+</svg>
