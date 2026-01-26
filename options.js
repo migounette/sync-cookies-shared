@@ -13,9 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const resetBackendBtn = document.getElementById('resetBackendBtn');
   const testConnectionBtn = document.getElementById('testConnectionBtn');
   const backendStatus = document.getElementById('backendStatus');
-  const clearStorageBtn = document.getElementById('clearStorage');
-  const storedCountSpan = document.getElementById('storedCount');
-  const lastSyncSpan = document.getElementById('lastSync');
+  const encryptionPassword = document.getElementById('encryptionPassword');
+  const togglePassword = document.getElementById('togglePassword');
+  const savePasswordBtn = document.getElementById('savePasswordBtn');
+  const passwordStatus = document.getElementById('passwordStatus');
 
   // Show/hide provider settings based on selection
   if (backendProvider) {
@@ -35,7 +36,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load backend settings on page load (must be after event listener setup)
   loadBackendSettings();
-  updateStorageInfo();
+  loadPasswordSettings();
+  
+  // Toggle password visibility
+  if (togglePassword && encryptionPassword) {
+    togglePassword.addEventListener('click', function() {
+      const type = encryptionPassword.type === 'password' ? 'text' : 'password';
+      encryptionPassword.type = type;
+      togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
+    });
+  }
+
+  // Save encryption password
+  if (savePasswordBtn) {
+    savePasswordBtn.addEventListener('click', function() {
+      const password = encryptionPassword.value.trim();
+      if (!password) {
+        showPasswordStatus('Password cannot be empty!', 'error');
+        return;
+      }
+      chrome.storage.local.set({ encryptionPassword: password }, function() {
+        showPasswordStatus('Password saved successfully!', 'success');
+      });
+    });
+  }
 
   // Save backend settings
   if (saveBackendBtn) {
@@ -156,34 +180,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Clear storage
-  if (clearStorageBtn) {
-    clearStorageBtn.addEventListener('click', function() {
-      if (confirm('Are you sure you want to clear all stored cookies? This cannot be undone.')) {
-        chrome.storage.local.clear(function() {
-          alert('Storage cleared successfully!');
-          updateStorageInfo();
-        });
-      }
-    });
+  // Show password status message
+  function showPasswordStatus(message, type) {
+    passwordStatus.textContent = message;
+    passwordStatus.className = 'status ' + type;
+    
+    if (message) {
+      setTimeout(function() {
+        passwordStatus.textContent = '';
+        passwordStatus.className = 'status';
+      }, 5000);
+    }
   }
 
-  // Update storage info
-  function updateStorageInfo() {
-    chrome.storage.local.get(['cookies_metadata'], function(result) {
-      if (result.cookies_metadata) {
-        storedCountSpan.textContent = result.cookies_metadata.count || 0;
-        
-        const lastSync = result.cookies_metadata.timestamp;
-        if (lastSync) {
-          const date = new Date(lastSync);
-          lastSyncSpan.textContent = date.toLocaleString();
-        } else {
-          lastSyncSpan.textContent = 'Never';
-        }
-      } else {
-        storedCountSpan.textContent = '0';
-        lastSyncSpan.textContent = 'Never';
+  // Load password settings
+  function loadPasswordSettings() {
+    chrome.storage.local.get(['encryptionPassword'], function(result) {
+      if (result.encryptionPassword) {
+        encryptionPassword.value = result.encryptionPassword;
       }
     });
   }
