@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sync Cookies Shared</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="icons/icon48.png" alt="Cookie Icon" class="logo">
+      <h1>Sync Cookies</h1>
+      <div class="status-indicator" id="statusIndicator" title="Ready">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10"></circle>
+        </svg>
+      </div>
+      <a href="#" id="openActivityLog" class="activity-log-icon" title="Activity Log">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      </a>
+      <a href="options.html" target="_blank" class="settings-icon" title="Settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 1v6m0 6v6m8.66-13.66l-4.24 4.24m-8.48 0L3.34 5.34m17.32 13.32l-4.24-4.24m-8.48 0l-4.24 4.24"></path>
+        </svg>
+      </a>
+    </div>
+    
+    <div class="content">
+      <div class="actions">
+        <button id="syncBtn" class="btn btn-success">
+          Sync Now
+        </button>
+        <button id="pushSelectedBtn" class="btn btn-push" disabled>
+          Push Selected (<span id="selectedCount">0</span>)
+        </button>
+      </div>
+      
+      <div class="password-section">
+        <label for="encryptionPassword">Encryption Password: <span class="required">*</span></label>
+        <div class="password-input-wrapper">
+          <input type="password" id="encryptionPassword" placeholder="Enter password for encryption (required)" value="changeit" required>
+          <button type="button" id="togglePassword" class="toggle-password" title="Show/Hide password">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="info">
+        <p id="cookieCount">Cookies: 0</p>
+      </div>
+      
+      <div class="filter-section">
+        <label for="domainFilter">Filter by domain:</label>
+        <input type="text" id="domainFilter" placeholder="e.g., *.example.com or google.com">
+      </div>
+      
+      <div class="table-container">
+        <table id="cookiesTable">
+          <thead>
+            <tr>
+              <th class="checkbox-cell">
+                <input type="checkbox" id="selectAll" title="Select all">
+              </th>
+              <th>Name</th>
+              <th>Domain</th>
+            </tr>
+          </thead>
+          <tbody id="cookiesTableBody">
+            <tr>
+              <td colspan="3" class="loading">Loading cookies...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

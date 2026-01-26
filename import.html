@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Cookies - Sync Cookies</title>
+  <link rel="stylesheet" href="import.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="icons/icon48.png" alt="Cookie Icon" class="logo">
+      <h1>Import Cookies</h1>
+    </div>
+    
+    <div class="content">
+      <div class="info-section">
+        <div class="info-box">
+          <p><strong>Source:</strong> <span id="sourceInfo">Loading...</span></p>
+          <p><strong>Total Cookies:</strong> <span id="totalCount">0</span></p>
+          <p><strong>Export Date:</strong> <span id="exportDate">Unknown</span></p>
+          <p><strong>Browser ID:</strong> <span id="browserInfo">Unknown</span></p>
+        </div>
+        <div id="warningBox" class="warning-box" style="display: none;">
+          <strong>⚠ Warning:</strong> <span id="warningMessage"></span>
+        </div>
+      </div>
+      
+      <div class="filter-section">
+        <input type="text" id="domainFilter" placeholder="Filter by domain...">
+        <label class="select-all-container">
+          <input type="checkbox" id="selectAll">
+          <span>Select All (<span id="selectedCount">0</span> selected)</span>
+        </label>
+      </div>
+      
+      <div class="cookies-section">
+        <table id="cookiesTable">
+          <thead>
+            <tr>
+              <th class="checkbox-col">
+                <input type="checkbox" id="selectAllHeader">
+              </th>
+              <th>Name</th>
+              <th>Domain</th>
+              <th>Path</th>
+              <th>Expires</th>
+            </tr>
+          </thead>
+          <tbody id="cookiesTableBody">
+            <tr>
+              <td colspan="5" class="loading">Loading cookies...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <button id="cancelBtn" class="btn btn-secondary">Cancel</button>
+      <button id="applyBtn" class="btn btn-primary" disabled>Apply Selected Cookies</button>
+    </div>
+  </div>
+  
+  <script src="import.js"></script>
+</body>
+</html>

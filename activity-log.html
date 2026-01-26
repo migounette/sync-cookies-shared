@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Log - Sync Cookies</title>
+  <link rel="stylesheet" href="activity-log.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="icons/icon48.png" alt="Cookie Icon" class="logo">
+      <h1>Activity Log</h1>
+      <button id="clearLog" class="btn-clear-log" title="Clear all logs">Clear All</button>
+    </div>
+    
+    <div class="content">
+      <div class="log-container">
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th class="col-time">Time</th>
+              <th class="col-message">Message</th>
+            </tr>
+          </thead>
+          <tbody id="logTableBody">
+            <tr>
+              <td colspan="2" class="no-logs">No activity yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <script src="activity-log.js"></script>
+</body>
+</html>

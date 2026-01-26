@@ -1,0 +1,354 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 450px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.container {
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e0e0;
+  position: relative;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+}
+
+h1 {
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+  flex: 1;
+}
+
+.status-indicator {
+  color: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  margin-right: 8px;
+}
+
+.status-indicator.error {
+  color: #f44336;
+}
+
+.status-indicator.warning {
+  color: #FF9800;
+}
+
+.status-indicator.processing {
+  color: #2196F3;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.activity-log-icon {
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin-right: 4px;
+}
+
+.activity-log-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #2196F3;
+}
+
+.settings-icon {
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  margin-left: auto;
+}
+
+.settings-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #2196F3;
+  transform: rotate(90deg);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: #2196F3;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1976D2;
+}
+
+.btn-secondary {
+  background: #FF9800;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #F57C00;
+}
+
+.btn-success {
+  background: #4CAF50;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #388E3C;
+}
+
+.info {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#cookieCount {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.password-section {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.password-section label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.password-section label .required {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#encryptionPassword {
+  width: 100%;
+  padding: 8px 40px 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+
+#encryptionPassword:focus {
+  outline: none;
+  border-color: #9C27B0;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.toggle-password:hover {
+  color: #9C27B0;
+}
+
+.toggle-password:focus {
+  outline: none;
+}
+
+.filter-section {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-section label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+#domainFilter {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+
+#domainFilter:focus {
+  outline: none;
+  border-color: #2196F3;
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#cookiesTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#cookiesTable thead {
+  position: sticky;
+  top: 0;
+  background: #f5f7fa;
+  z-index: 10;
+}
+
+#cookiesTable th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #e0e0e0;
+  text-transform: uppercase;
+}
+
+#cookiesTable td {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #666;
+  border-bottom: 1px solid #f0f0f0;
+  word-break: break-word;
+}
+
+#cookiesTable tbody tr:hover {
+  background: #f9f9f9;
+}
+
+#cookiesTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+#cookiesTable .loading,
+#cookiesTable .no-cookies {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+}
+
+.checkbox-cell {
+  width: 40px;
+  text-align: center;
+}
+
+.checkbox-cell input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+#cookiesTable th:nth-child(2),
+#cookiesTable td:nth-child(2) {
+  width: 40%;
+}
+
+#cookiesTable th:nth-child(3),
+#cookiesTable td:nth-child(3) {
+  width: calc(60% - 40px);
+}
+
+.btn-push {
+  background: #9C27B0;
+  color: white;
+}
+
+.btn-push:hover:not(:disabled) {
+  background: #7B1FA2;
+}
+
+.btn-push:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
