@@ -27,11 +27,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Load backend settings
   loadBackendSettings();
   
-  // Load saved state
-  loadSavedState();
-
-  // Update cookie count and table on load
-  loadCookies();
+  // Load saved state first, then load cookies
+  loadSavedState().then(() => {
+    loadCookies();
+  });
 
   // Filter cookies when typing in the domain filter
   domainFilter.addEventListener('input', function() {
@@ -58,16 +57,26 @@ document.addEventListener('DOMContentLoaded', function() {
   if (selectAllCheckbox) {
     selectAllCheckbox.addEventListener('change', function() {
       const checkboxes = cookiesTableBody.querySelectorAll('input[type="checkbox"]');
-      checkboxes.forEach(cb => {
-        cb.checked = selectAllCheckbox.checked;
-        const cookieId = cb.dataset.cookieId;
-        if (selectAllCheckbox.checked) {
+      
+      if (selectAllCheckbox.checked) {
+        // When checking, add only visible cookies
+        checkboxes.forEach(cb => {
+          cb.checked = true;
+          const cookieId = cb.dataset.cookieId;
           selectedCookies.add(cookieId);
-        } else {
-          selectedCookies.delete(cookieId);
-        }
-      });
-      updateSelectedCount();    saveSelectedCookies();  });
+        });
+      } else {
+        // When unchecking, remove ALL selected cookies (not just visible ones)
+        // This prevents the issue where hidden filtered cookies remain selected
+        checkboxes.forEach(cb => {
+          cb.checked = false;
+        });
+        selectedCookies.clear();
+      }
+      
+      updateSelectedCount();
+      saveSelectedCookies();
+    });
   }
 
   // Push selected cookies
@@ -595,24 +604,29 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Load saved state from storage
   function loadSavedState() {
-    chrome.storage.local.get(['domainFilter', 'selectedCookies', 'encryptionPassword'], function(result) {
-      // Restore filter
-      if (result.domainFilter) {
-        domainFilter.value = result.domainFilter;
-      }
-      
-      // Restore selected cookies
-      if (result.selectedCookies && Array.isArray(result.selectedCookies)) {
-        selectedCookies = new Set(result.selectedCookies);
-      }
-      
-      // Load encryption password
-      if (result.encryptionPassword) {
-        encryptionPassword = result.encryptionPassword;
-        addLog('Encryption password loaded from settings');
-      } else {
-        addLog('Warning: No encryption password configured. Please set it in Settings.');
-      }
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['domainFilter', 'selectedCookies', 'encryptionPassword'], function(result) {
+        // Restore filter
+        if (result.domainFilter) {
+          domainFilter.value = result.domainFilter;
+        }
+        
+        // Restore selected cookies
+        if (result.selectedCookies && Array.isArray(result.selectedCookies)) {
+          selectedCookies = new Set(result.selectedCookies);
+          updateSelectedCount();
+        }
+        
+        // Load encryption password
+        if (result.encryptionPassword) {
+          encryptionPassword = result.encryptionPassword;
+          addLog('Encryption password loaded from settings');
+        } else {
+          addLog('Warning: No encryption password configured. Please set it in Settings.');
+        }
+        
+        resolve();
+      });
     });
   }
   

@@ -326,6 +326,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
       let successCount = 0;
       let failCount = 0;
+      let failedCookies = [];
 
       for (const cookie of cookiesToApply) {
         try {
@@ -350,6 +351,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         } catch (error) {
           console.error('Failed to set cookie:', cookie.name, error);
           failCount++;
+          failedCookies.push({ name: cookie.name, domain: cookie.domain, error: error.message });
         }
       }
 
@@ -357,10 +359,32 @@ document.addEventListener('DOMContentLoaded', async function() {
       chrome.storage.local.get(['activityLog'], function(result) {
         const logs = result.activityLog || [];
         logs.push({ time: new Date().toISOString(), message: `[Import] Import completed: ${successCount} successful, ${failCount} failed` });
+        
+        // Log failed cookie names if any
+        if (failedCookies.length > 0) {
+          const failedNames = failedCookies.slice(0, 5).map(c => `${c.name} (${c.domain})`).join(', ');
+          logs.push({ time: new Date().toISOString(), message: `[Import] Failed cookies: ${failedNames}${failedCookies.length > 5 ? ` and ${failedCookies.length - 5} more...` : ''}` });
+        }
+        
         chrome.storage.local.set({ activityLog: logs });
       });
 
-      alert(`Import complete!\n\nSuccess: ${successCount}\nFailed: ${failCount}`);
+      // Build alert message with failed cookie details
+      let alertMessage = `Import complete!\n\nSuccess: ${successCount}\nFailed: ${failCount}`;
+      
+      if (failedCookies.length > 0) {
+        alertMessage += '\n\nFailed cookies:';
+        const displayCount = Math.min(5, failedCookies.length);
+        for (let i = 0; i < displayCount; i++) {
+          const fc = failedCookies[i];
+          alertMessage += `\n  • ${fc.name} (${fc.domain})`;
+        }
+        if (failedCookies.length > 5) {
+          alertMessage += `\n  ... and ${failedCookies.length - 5} more`;
+        }
+      }
+
+      alert(alertMessage);
       
       if (successCount > 0) {
         window.close();
