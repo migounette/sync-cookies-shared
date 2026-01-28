@@ -331,15 +331,24 @@ document.addEventListener('DOMContentLoaded', async function() {
       for (const cookie of cookiesToApply) {
         try {
           // Prepare cookie for Chrome API
+          const isSecure = cookie.secure || false;
+          
+          // SameSite handling: 'no_restriction' requires secure=true
+          let sameSite = cookie.sameSite || 'lax';
+          if (sameSite === 'no_restriction' && !isSecure) {
+            // Fallback to 'lax' if cookie is not secure but wants no_restriction
+            sameSite = 'lax';
+          }
+          
           const cookieDetails = {
-            url: `http${cookie.secure ? 's' : ''}://${cookie.domain.replace(/^\./, '')}${cookie.path}`,
+            url: `http${isSecure ? 's' : ''}://${cookie.domain.replace(/^\./, '')}${cookie.path}`,
             name: cookie.name,
             value: cookie.value,
             domain: cookie.domain,
             path: cookie.path,
-            secure: cookie.secure || false,
+            secure: isSecure,
             httpOnly: cookie.httpOnly || false,
-            sameSite: cookie.sameSite || 'no_restriction'
+            sameSite: sameSite
           };
 
           if (cookie.expirationDate) {
