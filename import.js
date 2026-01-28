@@ -332,6 +332,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
           // Prepare cookie for Chrome API
           const isSecure = cookie.secure || false;
+          const isHostPrefixed = cookie.name.startsWith('__Host-');
+          const isSecurePrefixed = cookie.name.startsWith('__Secure-');
           
           // SameSite handling: 'no_restriction' requires secure=true
           let sameSite = cookie.sameSite || 'lax';
@@ -340,16 +342,27 @@ document.addEventListener('DOMContentLoaded', async function() {
             sameSite = 'lax';
           }
           
+          // __Host- prefix requirements:
+          // 1. Must be secure
+          // 2. Must NOT have domain attribute
+          // 3. Must have path='/'
+          // __Secure- prefix requirements:
+          // 1. Must be secure
+          
           const cookieDetails = {
             url: `http${isSecure ? 's' : ''}://${cookie.domain.replace(/^\./, '')}${cookie.path}`,
             name: cookie.name,
             value: cookie.value,
-            domain: cookie.domain,
-            path: cookie.path,
-            secure: isSecure,
+            path: isHostPrefixed ? '/' : cookie.path,
+            secure: (isHostPrefixed || isSecurePrefixed) ? true : isSecure,
             httpOnly: cookie.httpOnly || false,
             sameSite: sameSite
           };
+
+          // __Host- cookies must NOT have domain attribute
+          if (!isHostPrefixed) {
+            cookieDetails.domain = cookie.domain;
+          }
 
           if (cookie.expirationDate) {
             cookieDetails.expirationDate = cookie.expirationDate;
