@@ -60,7 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const checkboxes = cookiesTableBody.querySelectorAll('input[type="checkbox"]');
       
       if (selectAllCheckbox.checked) {
-        // When checking, add only visible cookies
+        // Clear previous selections and add only visible cookies
+        selectedCookies.clear();
         checkboxes.forEach(cb => {
           cb.checked = true;
           const cookieId = cb.dataset.cookieId;
@@ -154,6 +155,16 @@ document.addEventListener('DOMContentLoaded', function() {
         addLog(`✓ Successfully saved to ${providerName}`);
         addLog(`✓ ${cookiesToPush.length} cookies encrypted and pushed`);
         setStatus('success', `Encrypted ${cookiesToPush.length} cookies and saved to backend!`);
+        
+        // Clear selection after successful push
+        selectedCookies.clear();
+        updateSelectedCount();
+        saveSelectedCookies();
+        // Uncheck all visible checkboxes
+        const checkboxes = cookiesTableBody.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => cb.checked = false);
+        selectAllCheckbox.checked = false;
+        
         setTimeout(() => setStatus('ready', 'Ready'), 3000);
       } else {
         addLog('[ERROR] Backend returned false - save operation failed');
@@ -498,34 +509,47 @@ document.addEventListener('DOMContentLoaded', function() {
     pushSelectedBtn.disabled = selectedCookies.size === 0;
   }
 
-  // Filter cookies by domain with wildcard support
+  // Filter cookies by domain with wildcard and multi-domain support
+  // Supports pipe-separated patterns: *.hpe.com | *.microsoft.com
   function filterCookies(filterText) {
     if (!filterText) {
       displayCookies(allCookies);
+      cookieCountElement.textContent = `Cookies: ${allCookies.length}`;
       return;
     }
 
-    // Convert wildcard pattern to regex
-    // * matches any characters, ? matches single character
-    const regexPattern = filterText
-      .replace(/[.+^${}()|[\]\\]/g, '\\$&') // Escape special regex chars except * and ?
-      .replace(/\*/g, '.*') // Convert * to .*
-      .replace(/\?/g, '.'); // Convert ? to .
-    
+    // Split by pipe to support multiple domain patterns
+    const patterns = filterText.split('|').map(p => p.trim()).filter(p => p.length > 0);
+
+    if (patterns.length === 0) {
+      displayCookies(allCookies);
+      cookieCountElement.textContent = `Cookies: ${allCookies.length}`;
+      return;
+    }
+
     try {
-      const regex = new RegExp(regexPattern, 'i'); // Case insensitive
-      
-      const filtered = allCookies.filter(cookie => {
-        return regex.test(cookie.domain);
+      // Convert each wildcard pattern to regex and combine with OR
+      const regexParts = patterns.map(pattern => {
+        return pattern
+          .replace(/[.+^${}()[\]\\]/g, '\\$&') // Escape special regex chars except * and ?
+          .replace(/\*/g, '.*') // Convert * to .*
+          .replace(/\?/g, '.'); // Convert ? to .
       });
+      const combinedPattern = regexParts.map(p => `(?:${p})`).join('|');
+      const regex = new RegExp(combinedPattern, 'i');
+
+      const filtered = allCookies.filter(cookie => regex.test(cookie.domain));
 
       displayCookies(filtered);
+      cookieCountElement.textContent = `Cookies: ${filtered.length} / ${allCookies.length}`;
     } catch (error) {
-      // If regex is invalid, fall back to simple includes
+      // If regex is invalid, fall back to simple includes for each pattern
       const filtered = allCookies.filter(cookie => {
-        return cookie.domain.toLowerCase().includes(filterText);
+        const domain = cookie.domain.toLowerCase();
+        return patterns.some(p => domain.includes(p));
       });
       displayCookies(filtered);
+      cookieCountElement.textContent = `Cookies: ${filtered.length} / ${allCookies.length}`;
     }
   }
   
