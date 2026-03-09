@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const pushSelectedBtn = document.getElementById('pushSelectedBtn');
   const selectedCountSpan = document.getElementById('selectedCount');
   const openActivityLogBtn = document.getElementById('openActivityLog');
+  const cleanCookiesBtn = document.getElementById('cleanCookiesBtn');
 
   // Store all cookies for filtering
   let allCookies = [];
@@ -175,6 +176,47 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   }
 
+  // Clean all cookies
+  if (cleanCookiesBtn) {
+    cleanCookiesBtn.addEventListener('click', async function() {
+      if (!confirm('Are you sure you want to delete ALL cookies from the browser?')) return;
+      try {
+        cleanCookiesBtn.disabled = true;
+        setStatus('processing', 'Cleaning all cookies...');
+        addLog('Starting cookie cleanup...');
+
+        const allStores = await chrome.cookies.getAllCookieStores();
+        let totalRemoved = 0;
+
+        for (const store of allStores) {
+          const cookies = await chrome.cookies.getAll({ storeId: store.id });
+          for (const cookie of cookies) {
+            const protocol = cookie.secure ? 'https' : 'http';
+            const domain = cookie.domain.startsWith('.') ? cookie.domain.substring(1) : cookie.domain;
+            const url = `${protocol}://${domain}${cookie.path}`;
+            await chrome.cookies.remove({ url: url, name: cookie.name, storeId: store.id });
+            totalRemoved++;
+          }
+        }
+
+        addLog(`✓ Successfully removed ${totalRemoved} cookies`);
+        setStatus('success', `Removed ${totalRemoved} cookies`);
+        selectedCookies.clear();
+        updateSelectedCount();
+        saveSelectedCookies();
+        loadCookies();
+        setTimeout(() => setStatus('ready', 'Ready'), 3000);
+      } catch (error) {
+        console.error('Clean cookies error:', error);
+        addLog(`[ERROR] Clean cookies failed: ${error.message}`);
+        setStatus('warning', 'Failed to clean cookies: ' + error.message);
+        setTimeout(() => setStatus('ready', 'Ready'), 5000);
+      } finally {
+        cleanCookiesBtn.disabled = false;
+      }
+    });
+  }
+
   // Sync cookies - Import from backend
   if (syncBtn) {
     syncBtn.addEventListener('click', async function() {
@@ -322,12 +364,22 @@ document.addEventListener('DOMContentLoaded', function() {
         `&password=${encodeURIComponent(password)}` +
         `&source=${encodeURIComponent(sourceName)}`;
       
-      await chrome.windows.create({
+      const importWindow = await chrome.windows.create({
         url: importUrl,
         type: 'popup',
         width: 900,
         height: 700
       });
+      
+      // Refresh cookies when the import window is closed
+      const onWindowRemoved = (windowId) => {
+        if (windowId === importWindow.id) {
+          chrome.windows.onRemoved.removeListener(onWindowRemoved);
+          addLog('Import window closed, refreshing cookies...');
+          loadCookies();
+        }
+      };
+      chrome.windows.onRemoved.addListener(onWindowRemoved);
       
       setStatus('success', 'Import window opened');
       addLog('Import window opened successfully');
