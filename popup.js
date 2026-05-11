@@ -141,13 +141,18 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Convert to base64
       addLog('[Encryption] Step 3: Encoding to Base64...');
-      // Convert Uint8Array to string in chunks to avoid call stack overflow
-      let binaryString = '';
+      // Convert Uint8Array to binary string without using apply/spread to avoid stack overflow
+      const binaryChunks = [];
       const chunkSize = 8192;
       for (let i = 0; i < encryptedData.length; i += chunkSize) {
-        const chunk = encryptedData.subarray(i, i + chunkSize);
-        binaryString += String.fromCharCode.apply(null, chunk);
+        let chunk = '';
+        const end = Math.min(i + chunkSize, encryptedData.length);
+        for (let j = i; j < end; j++) {
+          chunk += String.fromCharCode(encryptedData[j]);
+        }
+        binaryChunks.push(chunk);
       }
+      const binaryString = binaryChunks.join('');
       const base64Data = btoa(binaryString);
       addLog(`[Encryption] Final size: ${base64Data.length} bytes`);
       addLog('[Encryption] ✓ Encryption complete');
