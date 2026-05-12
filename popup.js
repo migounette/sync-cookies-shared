@@ -139,21 +139,19 @@ document.addEventListener('DOMContentLoaded', function() {
       
       addLog(`[Encryption] Encrypted size: ${encryptedData.length} bytes`);
       
-      // Convert to base64
+      // Convert to base64 in chunks to avoid stack overflow with large data
       addLog('[Encryption] Step 3: Encoding to Base64...');
-      // Convert Uint8Array to binary string without using apply/spread to avoid stack overflow
-      const binaryChunks = [];
-      const chunkSize = 8192;
+      const base64Chunks = [];
+      const chunkSize = 32766; // Multiple of 3 for clean base64 boundaries
       for (let i = 0; i < encryptedData.length; i += chunkSize) {
-        let chunk = '';
         const end = Math.min(i + chunkSize, encryptedData.length);
+        let binaryString = '';
         for (let j = i; j < end; j++) {
-          chunk += String.fromCharCode(encryptedData[j]);
+          binaryString += String.fromCharCode(encryptedData[j]);
         }
-        binaryChunks.push(chunk);
+        base64Chunks.push(btoa(binaryString));
       }
-      const binaryString = binaryChunks.join('');
-      const base64Data = btoa(binaryString);
+      const base64Data = base64Chunks.join('');
       addLog(`[Encryption] Final size: ${base64Data.length} bytes`);
       addLog('[Encryption] ✓ Encryption complete');
       
@@ -697,6 +695,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Restore filter
         if (result.domainFilter) {
           domainFilter.value = result.domainFilter;
+        } else {
+          domainFilter.value = '*.hpe.com|*.microsoftonline.com|*.microsoft.com|*.msfauth.net';
         }
         
         // Restore selected cookies
